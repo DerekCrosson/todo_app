@@ -1,24 +1,49 @@
-# README
+# Rails Todo Application
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This Rails Todo application allows users to manage their tasks efficiently.
 
-Things you may want to cover:
+## Features
 
-* Ruby version
+- **CRUD Operations:** Create, read, update, delete, and index todo list items.
+- **Test Driven Development:** Developed using TDD principles to ensure reliability and maintainability.
 
-* System dependencies
+## Getting Started
 
-* Configuration
+### Prerequisites
 
-* Database creation
+- Ruby (version specified in `.ruby-version`)
+- Rails
+- PostgreSQL
 
-* Database initialization
+### Setup
 
-* How to run the test suite
+1. Clone the repository:
+   ```zsh
+   git clone https://github.com/DerekCrosson/todo_app.git
+   cd todo_app
+   ```
+   
+2. Install dependencies:
+   ```zsh
+   bundle install
+   ```
 
-* Services (job queues, cache servers, search engines, etc.)
+3. Setup the database:
+   ```zsh
+   rails db:create db:migrate
+   ```
 
-* Deployment instructions
+4. Start the rails server:
+   ```zsh
+   rails server
+   ```
+   
+5. Visit http://localhost:3000/todos in your browser to start managing your todos.
 
-* ...
+## Running Tests
+
+This project uses MiniTest for testing. Run the following command to execute the test suite:
+
+```zsh
+rails test
+```
