@@ -45,9 +45,6 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
 
-      - name: Install npm packages
-        run: npm install
-
       - name: Set up database
         env:
           PGHOST: localhost
