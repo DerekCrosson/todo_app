@@ -36,11 +36,14 @@ jobs:
           sudo apt-get -yqq install libpq-dev
           gem install bundler -v 2.1.4
           bundle install --jobs 4 --retry 3
+          
+      - name: Wait for PostgreSQL to become ready
+        run: sleep 5
 
       - name: Set up Database
         env:
           RAILS_ENV: test
-          POSTGRES_HOST: localhost
+          POSTGRES_HOST: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: my_test_database
