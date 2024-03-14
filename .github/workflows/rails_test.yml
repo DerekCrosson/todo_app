@@ -1,8 +1,12 @@
 name: Rails Tests
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   test:
@@ -10,49 +14,58 @@ jobs:
 
     services:
       postgres:
-        image: postgres:11
+        image: postgres:14
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: my_test_database
+          POSTGRES_DB: todo_app_test
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.2
+          ruby-version: 3.1.2
 
-      - name: Install Dependencies
+      - name: Cache gems
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Bundle install
         run: |
-          sudo apt-get -yqq install libpq-dev
-          gem install bundler -v 2.1.4
+          bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
-          
-      - name: Wait for PostgreSQL to become ready
-        run: sleep 5
 
-      - name: Set up Database
-        env:
-          RAILS_ENV: test
-          POSTGRES_HOST: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: my_test_database
-          POSTGRES_PORT: 5432
-        run: |
-          bin/rails db:create db:schema:load
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.15.1
 
-      - name: Run Tests
+      - name: Install npm packages
+        run: npm install
+
+      - name: Set up database
         env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
           RAILS_ENV: test
         run: |
-          bin/rails test
+          bundle exec rails db:setup
+
+      - name: Run tests
+        env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          RAILS_ENV: test
+        run: bundle exec rails test
